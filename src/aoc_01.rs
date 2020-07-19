@@ -1,3 +1,10 @@
+use crate::read_input::read_lines;
+
+pub fn aoc_01_01() -> i32 {
+    let lines  = read_lines(1);
+    calculate_floor(&lines[0])
+}
+
 fn calculate_floor(input: &str) -> i32 {
     let mut floor = 0;
     for c in input.chars() {

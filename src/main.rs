@@ -2,5 +2,5 @@ mod aoc_01;
 mod read_input;
 
 fn main() {
-    println!("Hello, world!");
+    println!("01 / 01: {}", aoc_01::aoc_01_01());
 }
