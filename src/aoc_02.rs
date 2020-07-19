@@ -20,9 +20,24 @@ pub fn aoc_02_01() -> u32 {
     area
 }
 
+pub fn aoc_02_02() -> u32 {
+    let mut ribbon = 0;
+
+    for dim in input() {
+        ribbon += calculate_ribbon(dim[0], dim[1], dim[2]);
+    }
+
+    ribbon
+}
+
 fn calculate_area(x: u32, y: u32, z: u32) -> u32 {
     let (min_a, min_b) = find_minimal(x, y, z);
     2 * (x * y + y * z + x * z) + min_a * min_b
+}
+
+fn calculate_ribbon(x: u32, y: u32, z: u32) -> u32 {
+    let (min_a, min_b) = find_minimal(x, y, z);
+    x * y * z + 2 * (min_a + min_b)
 }
 
 fn find_minimal(x: u32, y: u32, z: u32) -> (u32, u32) {
@@ -71,5 +86,15 @@ mod tests {
     #[test]
     fn find_min_03() {
         assert_eq!((1, 2), find_minimal(2, 3, 1));
+    }
+
+    #[test]
+    fn calculate_ribbon_01() {
+        assert_eq!(34, calculate_ribbon(2, 3, 4));
+    }
+
+    #[test]
+    fn calculate_ribbon_02() {
+        assert_eq!(14, calculate_ribbon(1, 1, 10))
     }
 }
