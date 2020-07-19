@@ -8,14 +8,18 @@ pub fn aoc_01_01() -> i32 {
 fn calculate_floor(input: &str) -> i32 {
     let mut floor = 0;
     for c in input.chars() {
-        if c == '(' {
-            floor += 1;
-        } else if c== ')' {
-            floor -= 1;
-        }
+        floor += calculate_next_floor(&c);
     }
 
     return floor
+}
+
+fn calculate_next_floor(c: &char) -> i32 {
+    match c {
+        '(' => 1,
+        ')' => -1,
+        _ => 0
+    }
 }
 
 #[cfg(test)]
