@@ -1,5 +1,6 @@
 mod aoc_01;
 mod aoc_02;
+mod aoc_03;
 mod read_input;
 
 fn main() {
