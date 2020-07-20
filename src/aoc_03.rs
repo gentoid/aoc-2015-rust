@@ -1,5 +1,5 @@
-use std::collections::HashSet;
 use crate::read_input::read_lines;
+use std::collections::HashSet;
 
 pub fn aoc_03_01() -> usize {
     let lines = read_lines(3);
@@ -7,16 +7,38 @@ pub fn aoc_03_01() -> usize {
 }
 
 fn houses(input: &str) -> usize {
+    uniq_houses(input).len()
+}
+
+fn houses_with_robo(input: &str) -> usize {
+    let mut input_santa = "".to_string();
+    let mut input_robo = "".to_string();
+
+    for (index, c) in input.char_indices() {
+        if index % 2 == 0 {
+            input_santa.push(c);
+        } else {
+            input_robo.push(c);
+        }
+    }
+
+    uniq_houses(&input_santa)
+        .union(&uniq_houses(&input_robo))
+        .collect::<HashSet<&(i32, i32)>>()
+        .len()
+}
+
+fn uniq_houses(input: &str) -> HashSet<(i32, i32)> {
     let mut houses = HashSet::new();
     let mut house = (0, 0);
-    houses.insert(house.clone());    
+    houses.insert(house.clone());
 
     for c in input.chars() {
         house = calculate_next_house(house, &c);
         houses.insert(house.clone());
     }
 
-    houses.len()
+    houses
 }
 
 fn calculate_next_house(house: (i32, i32), c: &char) -> (i32, i32) {
@@ -46,5 +68,20 @@ mod tests {
     #[test]
     fn two_houses_multiple_times() {
         assert_eq!(2, houses("^v^v^v^v^v"));
+    }
+
+    #[test]
+    fn three_houses_with_robo() {
+        assert_eq!(3, houses_with_robo("^v"));
+    }
+
+    #[test]
+    fn three_houses_and_back_with_robo() {
+        assert_eq!(3, houses_with_robo("^>v<"));
+    }
+
+    #[test]
+    fn eleven_houses_with_robo() {
+        assert_eq!(11, houses_with_robo("^v^v^v^v^v"));
     }
 }
