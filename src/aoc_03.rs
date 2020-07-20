@@ -1,4 +1,10 @@
 use std::collections::HashSet;
+use crate::read_input::read_lines;
+
+pub fn aoc_03_01() -> usize {
+    let lines = read_lines(3);
+    houses(&lines[0])
+}
 
 fn houses(input: &str) -> usize {
     let mut houses = HashSet::new();
