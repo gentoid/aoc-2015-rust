@@ -6,6 +6,11 @@ pub fn aoc_03_01() -> usize {
     houses(&lines[0])
 }
 
+pub fn aoc_03_02() -> usize {
+    let lines = read_lines(3);
+    houses_with_robo(&lines[0])
+}
+
 fn houses(input: &str) -> usize {
     uniq_houses(input).len()
 }
