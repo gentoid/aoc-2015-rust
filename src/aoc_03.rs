@@ -16,6 +16,15 @@ fn houses(input: &str) -> usize {
 }
 
 fn houses_with_robo(input: &str) -> usize {
+    let (input_santa, input_robo) = unzip_input(input);
+
+    uniq_houses(&input_santa)
+        .union(&uniq_houses(&input_robo))
+        .collect::<HashSet<&(i32, i32)>>()
+        .len()
+}
+
+fn unzip_input(input: &str) -> (String, String) {
     let mut input_santa = "".to_string();
     let mut input_robo = "".to_string();
 
@@ -27,10 +36,7 @@ fn houses_with_robo(input: &str) -> usize {
         }
     }
 
-    uniq_houses(&input_santa)
-        .union(&uniq_houses(&input_robo))
-        .collect::<HashSet<&(i32, i32)>>()
-        .len()
+    (input_santa, input_robo)
 }
 
 fn uniq_houses(input: &str) -> HashSet<(i32, i32)> {
