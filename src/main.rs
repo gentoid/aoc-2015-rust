@@ -1,6 +1,7 @@
 mod aoc_01;
 mod aoc_02;
 mod aoc_03;
+mod aoc_04;
 mod read_input;
 
 fn main() {
@@ -10,4 +11,5 @@ fn main() {
     println!("02 / 02: {}", aoc_02::aoc_02_02());
     println!("03 / 01: {}", aoc_03::aoc_03_01());
     println!("03 / 02: {}", aoc_03::aoc_03_02());
+    println!("04 / 01: {}", aoc_04::aoc_04_01());
 }
