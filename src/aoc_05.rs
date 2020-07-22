@@ -53,57 +53,52 @@ fn is_nice(input: &str) -> bool {
 }
 
 fn is_really_nice(line: &str) -> bool {
-    let mut pairs: HashMap<(char, char), Vec<usize>> = HashMap::new();
-    let mut letters_cache: HashMap<char, usize> = HashMap::new();
+    contains_pair_twice(line) && contains_repeated_letters(line)
+}
 
-    let mut prev_char = None;
-    let mut contains_repeated_letter = false;
+fn contains_repeated_letters(line: &str) -> bool {
+    let mut letters = HashMap::new();
 
-    for (index, c) in line.char_indices() {
-        if !contains_repeated_letter {
-            match letters_cache.get_mut(&c) {
-                None => {
-                    letters_cache.insert(c, index);
+    line.char_indices().any(|(index, c)| {
+        match letters.get_mut(&c) {
+            None => {
+                letters.insert(c, vec![index]);
+            }
+            Some(ids) => {
+                if ids.iter().any(|id| index - id == 2) {
+                    return true;
                 }
-                Some(cached_index) => {
-                    if index - *cached_index == 2 {
-                        contains_repeated_letter = true;
-                    } else {
-                        *cached_index = index;
+
+                ids.push(index);
+            }
+        }
+
+        return false
+    })
+}
+
+fn contains_pair_twice(line: &str) -> bool {
+    let mut pairs = HashMap::new();
+    let mut prev_char = None;
+    
+    line.char_indices().any(|(index, c)| {
+        if let Some(prev) = prev_char {
+            let pair = (prev, c);
+            match pairs.get(&pair) {
+                None => {
+                    pairs.insert(pair, index);
+                }
+                Some(id) => {
+                    if index - id >= 2 {
+                        return true;
                     }
                 }
             }
         }
 
-        if let Some(prev) = prev_char {
-            let pair = (prev, c);
-            match pairs.get_mut(&pair) {
-                None => {
-                    pairs.insert(pair, vec![index]);
-                }
-                Some(value) => value.push(index),
-            }
-        }
         prev_char = Some(c);
-    }
-
-    let contains_pair_twice = pairs.iter().any(|(_, indices)| {
-        if indices.len() < 2 {
-            return false;
-        }
-        let min = indices.iter().min();
-        let max = indices.iter().max();
-
-        if let Some(max) = max {
-            if let Some(min) = min {
-                return max - min >= 2;
-            }
-        }
-
         false
-    });
-
-    contains_pair_twice && contains_repeated_letter
+    })
 }
 
 #[cfg(test)]
@@ -153,5 +148,25 @@ mod tests {
     #[test]
     fn ieodomkazucvgmuy_is_really_not_nice() {
         assert!(!is_really_nice("ieodomkazucvgmuy"));
+    }
+
+    #[test]
+    fn aaa_does_not_contain_pairs() {
+        assert!(!contains_pair_twice("aaa"));
+    }
+
+    #[test]
+    fn xyxy_contains_pairs() {
+        assert!(contains_pair_twice("xyxy"));
+    }
+
+    #[test]
+    fn aabcdefgaa_contains_pairs() {
+        assert!(contains_pair_twice("aabcdefgaa"));
+    }
+
+    #[test]
+    fn aaa_contains_repeated_letters() {
+        assert!(contains_repeated_letters("aaa"));
     }
 }
