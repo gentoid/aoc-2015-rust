@@ -1,5 +1,18 @@
+use crate::read_input::read_lines;
 use regex::Regex;
 use std::collections::HashMap;
+
+pub fn aoc_06_01() -> usize {
+    let instructions = read_lines(6).iter().map(parse_line).collect::<Vec<_>>();
+
+    let mut lights = LightsField::new();
+
+    for instruction_line in instructions.iter() {
+        lights.apply_instruction(instruction_line);
+    }
+
+    lights.count()
+}
 
 fn parse_line(line: &String) -> InstructionLine {
     let mut instruction = Instruction::Toggle;
@@ -14,7 +27,6 @@ fn parse_line(line: &String) -> InstructionLine {
             .unwrap();
 
     let captures = digits.captures(line).unwrap();
-    println!("{:#?}", captures);
 
     InstructionLine {
         instruction,
@@ -51,6 +63,16 @@ impl LightsField {
     fn new() -> Self {
         LightsField {
             matrix: HashMap::new(),
+        }
+    }
+
+    fn apply_instruction(&mut self, instruction_line: &InstructionLine) {
+        let from = instruction_line.from;
+        let to = instruction_line.to;
+        match instruction_line.instruction {
+            Instruction::Toggle => self.toggle(from, to),
+            Instruction::TurnOff => self.turn_off(from, to),
+            Instruction::TurnOn => self.turn_on(from, to),
         }
     }
 
@@ -139,8 +161,8 @@ mod tests {
             parse_line(&line),
             InstructionLine {
                 instruction: Instruction::Toggle,
-                from: (37,63),
-                to: (678,45),
+                from: (37, 63),
+                to: (678, 45),
             }
         );
     }
