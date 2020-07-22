@@ -12,6 +12,17 @@ pub fn aoc_05_01() -> u32 {
     num_of_nice_lines
 }
 
+pub fn aoc_05_02() -> u32 {
+    let mut num_of_nice_lines = 0;
+    for line in read_lines(5) {
+        if is_really_nice(&line) {
+            num_of_nice_lines += 1;
+        }
+    }
+
+    num_of_nice_lines
+}
+
 fn is_nice(input: &str) -> bool {
     let naugty_list = vec!["ab", "cd", "pq", "xy"];
     let vowels = vec!['a', 'e', 'i', 'o', 'u'];
