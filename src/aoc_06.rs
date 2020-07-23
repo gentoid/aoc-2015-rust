@@ -14,6 +14,18 @@ pub fn aoc_06_01() -> usize {
     lights.count()
 }
 
+pub fn aoc_06_02() -> usize {
+    let instructions = read_lines(6).iter().map(parse_line).collect::<Vec<_>>();
+
+    let mut lights = LightsFixed::new();
+
+    for instruction_line in instructions.iter() {
+        lights.apply_instruction(instruction_line);
+    }
+
+    lights.count()
+}
+
 fn parse_line(line: &String) -> InstructionLine {
     let mut instruction = Instruction::Toggle;
     if line.starts_with("turn off") {
@@ -109,6 +121,64 @@ impl Lights {
             .filter(|(_, &value)| value)
             .collect::<Vec<_>>()
             .len()
+    }
+}
+
+struct LightsFixed {
+    matrix: HashMap<(u32, u32), usize>,
+}
+
+impl LightsFixed {
+    fn new() -> Self {
+        LightsFixed {
+            matrix: HashMap::new(),
+        }
+    }
+
+    fn apply_instruction(&mut self, instruction_line: &InstructionLine) {
+        let from = instruction_line.from;
+        let to = instruction_line.to;
+        match instruction_line.instruction {
+            Instruction::Toggle => self.toggle(from, to),
+            Instruction::TurnOff => self.turn_off(from, to),
+            Instruction::TurnOn => self.turn_on(from, to),
+        }
+    }
+
+    fn turn_on(&mut self, from: (u32, u32), to: (u32, u32)) {
+        for x in from.0..=to.0 {
+            for y in from.1..=to.1 {
+                let light = self.matrix.entry((x, y)).or_insert(0);
+                *light += 1;
+            }
+        }
+    }
+
+    fn turn_off(&mut self, from: (u32, u32), to: (u32, u32)) {
+        for x in from.0..=to.0 {
+            for y in from.1..=to.1 {
+                let light = self.matrix.entry((x, y)).or_insert(0);
+                if *light > 0 {
+                    *light -= 1;
+                }
+            }
+        }
+    }
+
+    fn toggle(&mut self, from: (u32, u32), to: (u32, u32)) {
+        for x in from.0..=to.0 {
+            for y in from.1..=to.1 {
+                let light = self.matrix.entry((x, y)).or_insert(0);
+                *light += 2;
+            }
+        }
+    }
+
+    fn count(&self) -> usize {
+        self.matrix
+            .iter()
+            .map(|(_, value)| value)
+            .sum()
     }
 }
 
