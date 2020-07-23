@@ -5,7 +5,7 @@ use std::collections::HashMap;
 pub fn aoc_06_01() -> usize {
     let instructions = read_lines(6).iter().map(parse_line).collect::<Vec<_>>();
 
-    let mut lights = LightsField::new();
+    let mut lights = Lights::new();
 
     for instruction_line in instructions.iter() {
         lights.apply_instruction(instruction_line);
@@ -55,13 +55,13 @@ struct InstructionLine {
     to: (u32, u32),
 }
 
-struct LightsField {
+struct Lights {
     matrix: HashMap<(u32, u32), bool>,
 }
 
-impl LightsField {
+impl Lights {
     fn new() -> Self {
-        LightsField {
+        Lights {
             matrix: HashMap::new(),
         }
     }
@@ -118,12 +118,12 @@ mod tests {
 
     #[test]
     fn zero_lights_after_init() {
-        assert_eq!(LightsField::new().count(), 0)
+        assert_eq!(Lights::new().count(), 0)
     }
 
     #[test]
     fn turns_on_small_square() {
-        let mut lights = LightsField::new();
+        let mut lights = Lights::new();
         lights.turn_on((1, 1), (4, 4));
         assert_eq!(lights.count(), 16);
     }
