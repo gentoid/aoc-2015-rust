@@ -4,6 +4,7 @@ mod aoc_03;
 mod aoc_04;
 mod aoc_05;
 mod aoc_06;
+mod aoc_07;
 mod read_input;
 
 fn main() {
