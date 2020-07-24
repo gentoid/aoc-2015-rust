@@ -4,6 +4,7 @@ use std::collections::HashMap;
 #[derive(PartialEq, Debug)]
 enum Operation {
     Pass(String),
+    PassNum(usize),
     Not(String),
     And(String, String),
     AndNum(usize, String),
@@ -14,6 +15,7 @@ enum Operation {
 
 fn parse_line(line: &str) -> (String, Operation) {
     let pass_line = Regex::new(r"^([a-z]+) -> ([a-z]+)$").unwrap();
+    let pass_num_line = Regex::new(r"^(\d+) -> ([a-z]+)$").unwrap();
     let not_line = Regex::new(r"^NOT ([a-z]+) -> ([a-z]+)$").unwrap();
     let and_line = Regex::new(r"^([a-z]+) AND ([a-z]+) -> ([a-z]+)$").unwrap();
     let and_num_line = Regex::new(r"^(\d+) AND ([a-z]+) -> ([a-z]+)$").unwrap();
@@ -23,6 +25,10 @@ fn parse_line(line: &str) -> (String, Operation) {
 
     if let Some(captures) = pass_line.captures(line) {
         return (captures[2].into(), Operation::Pass(captures[1].into()));
+    }
+
+    if let Some(captures) = pass_num_line.captures(line) {
+        return (captures[2].into(), Operation::PassNum(captures[1].parse().unwrap()));
     }
 
     if let Some(captures) = not_line.captures(line) {
@@ -76,6 +82,14 @@ mod tests {
         assert_eq!(
             parse_line("lx -> a"),
             ("a".into(), Operation::Pass("lx".into()))
+        );
+    }
+
+    #[test]
+    fn parses_pass_num_line() {
+        assert_eq!(
+            parse_line("157 -> a"),
+            ("a".into(), Operation::PassNum(157))
         );
     }
 
