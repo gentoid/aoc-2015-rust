@@ -4,13 +4,13 @@ use std::collections::HashMap;
 #[derive(PartialEq, Debug)]
 enum Operation {
     Pass(String),
-    PassNum(usize),
+    PassNum(isize),
     Not(String),
     And(String, String),
-    AndNum(usize, String),
+    AndNum(isize, String),
     Or(String, String),
-    Rshift(String, usize),
-    Lshift(String, usize),
+    Rshift(String, isize),
+    Lshift(String, isize),
 }
 
 #[derive(PartialEq, Debug)]
