@@ -2,9 +2,17 @@ use regex::Regex;
 use std::collections::HashMap;
 use crate::read_input::read_lines;
 
-pub fn day_07_part_1() -> isize {
+pub fn part_1() -> isize {
     let lines = read_lines(7);
     let circuit = parse_and_build(&lines);
+    solve_circuit(&circuit)
+}
+
+pub fn part_2() -> isize {
+    let lines = read_lines(7);
+    let mut circuit = parse_and_build(&lines);
+    let first_run = solve_circuit(&circuit);
+    circuit.insert("b".into(), Operation::PassNum(first_run));
     solve_circuit(&circuit)
 }
 

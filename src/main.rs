@@ -4,7 +4,7 @@ mod aoc_03;
 mod aoc_04;
 mod aoc_05;
 mod aoc_06;
-mod aoc_07;
+mod day_07;
 mod read_input;
 
 fn main() {
@@ -20,5 +20,6 @@ fn main() {
     println!("05 / 02: {}", aoc_05::aoc_05_02());
     println!("06 / 01: {}", aoc_06::aoc_06_01());
     println!("06 / 02: {}", aoc_06::aoc_06_02());
-    println!("07 / 01: {}", aoc_07::day_07_part_1());
+    println!("07 / 01: {}", aoc_07::part_1());
+    println!("07 / 02: {}", aoc_07::part_2());
 }
