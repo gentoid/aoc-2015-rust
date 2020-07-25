@@ -4,7 +4,7 @@ fn count_chars(line: &str) -> (usize, usize) {
     let mut escape = false;
 
     for c in line.chars() {
-        if c == '\\' {
+        if c == '\\' && !escape {
             escape = true;
             continue;
         }
@@ -41,5 +41,11 @@ mod tests {
     fn counts_hex_notation() {
         let line = r#""\x27""#;
         assert_eq!((6, 1), count_chars(line))
+    }
+
+    #[test]
+    fn counts_double_slashes() {
+        let line = r#""\\tr""#;
+        assert_eq!((6, 3), count_chars(line))
     }
 }
