@@ -36,7 +36,10 @@ fn parse_line(line: &str) -> (String, Operation) {
     }
 
     if let Some(captures) = pass_num_line.captures(line) {
-        return (captures[2].into(), Operation::PassNum(captures[1].parse().unwrap()));
+        return (
+            captures[2].into(),
+            Operation::PassNum(captures[1].parse().unwrap()),
+        );
     }
 
     if let Some(captures) = not_line.captures(line) {
