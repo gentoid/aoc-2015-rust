@@ -13,13 +13,7 @@ enum Operation {
     Lshift(String, isize),
 }
 
-#[derive(PartialEq, Debug)]
-enum PointState {
-    Value(isize),
-    Op(Operation),
-}
-
-type Circuit = HashMap<String, PointState>;
+type Circuit = HashMap<String, Operation>;
 
 fn parse_line(line: &str) -> (String, Operation) {
     let pass_line = Regex::new(r"^([a-z]+) -> ([a-z]+)$").unwrap();
@@ -93,7 +87,7 @@ fn parse_and_build(lines: &Vec<String>) -> Circuit {
     let mut circuit = HashMap::new();
 
     for (string, op) in ops {
-        circuit.insert(string, PointState::Op(op));
+        circuit.insert(string, op);
     }
 
     circuit
@@ -170,7 +164,6 @@ mod tests {
     #[test]
     fn parses_and_build_circuit() {
         use Operation::*;
-        use PointState::*;
 
         let input: Vec<String> = vec![
             "12 -> d".into(),
@@ -179,10 +172,10 @@ mod tests {
             "e AND b -> a".into(),
         ];
         let mut expected: Circuit = HashMap::new();
-        expected.insert("a".into(), Op(And("e".into(), "b".into())));
-        expected.insert("b".into(), Op(Or("d".into(), "e".into())));
-        expected.insert("d".into(), Op(PassNum(12)));
-        expected.insert("e".into(), Op(PassNum(3)));
+        expected.insert("a".into(), And("e".into(), "b".into()));
+        expected.insert("b".into(), Or("d".into(), "e".into()));
+        expected.insert("d".into(), PassNum(12));
+        expected.insert("e".into(), PassNum(3));
         assert_eq!(expected, parse_and_build(&input));
     }
 }
