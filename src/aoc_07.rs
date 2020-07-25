@@ -93,6 +93,77 @@ fn parse_and_build(lines: &Vec<String>) -> Circuit {
     circuit
 }
 
+enum Point<'p> {
+    Calc(&'p String),
+    Calc2(&'p String, &'p String),
+    Value(isize),
+}
+
+fn solve_circuit(circuit: &Circuit) -> isize {
+    let end_point = "a".to_string();
+    let mut to_calculate = vec![end_point.clone()];
+
+    let mut cache: HashMap<String, isize> = HashMap::new();
+
+    while !to_calculate.is_empty() {
+        let key = to_calculate.pop().unwrap();
+        match cache.get(&key) {
+            None => {
+                let op = circuit.get(&key).unwrap();
+
+                let res = match op {
+                    Operation::Pass(x) => cache
+                        .get(x)
+                        .map_or(Point::Calc(x), |val| Point::Value(*val)),
+                    Operation::PassNum(num) => Point::Value(*num),
+                    Operation::Not(x) => cache
+                        .get(x)
+                        .map_or(Point::Calc(x), |val| Point::Value(!val)),
+                    Operation::And(x, y) => match (cache.get(x), cache.get(y)) {
+                        (None, None) => Point::Calc2(x, y),
+                        (None, Some(_)) => Point::Calc(x),
+                        (Some(_), None) => Point::Calc(y),
+                        (Some(x_value), Some(y_value)) => Point::Value(x_value & y_value),
+                    },
+                    Operation::AndNum(num, x) => cache
+                        .get(x)
+                        .map_or(Point::Calc(x), |val| Point::Value(num & val)),
+                    Operation::Or(x, y) => match (cache.get(x), cache.get(y)) {
+                        (None, None) => Point::Calc2(x, y),
+                        (None, Some(_)) => Point::Calc(x),
+                        (Some(_), None) => Point::Calc(y),
+                        (Some(x_value), Some(y_value)) => Point::Value(x_value | y_value),
+                    },
+                    Operation::Rshift(x, num) => cache
+                        .get(x)
+                        .map_or(Point::Calc(x), |val| Point::Value(val >> num)),
+                    Operation::Lshift(x, num) => cache
+                        .get(x)
+                        .map_or(Point::Calc(x), |val| Point::Value(val << num)),
+                };
+
+                match res {
+                    Point::Calc(x) => {
+                        to_calculate.push(key.clone());
+                        to_calculate.push(x.clone());
+                    }
+                    Point::Calc2(x, y) => {
+                        to_calculate.push(key.clone());
+                        to_calculate.push(x.clone());
+                        to_calculate.push(y.clone());
+                    }
+                    Point::Value(value) => {
+                        cache.insert(key.clone(), value);
+                    }
+                }
+            }
+            Some(_) => {}
+        }
+    }
+
+    *cache.get(&end_point).unwrap()
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -177,5 +248,32 @@ mod tests {
         expected.insert("d".into(), PassNum(12));
         expected.insert("e".into(), PassNum(3));
         assert_eq!(expected, parse_and_build(&input));
+    }
+
+    #[test]
+    fn solves_sinplest_circuit() {
+        let input = vec!["12 -> a".into()];
+        let solved = solve_circuit(&parse_and_build(&input));
+        assert_eq!(12, solved);
+    }
+
+    #[test]
+    fn solves_3_state_circuit() {
+        let input = vec!["e -> a".into(), "NOT d -> e".into(), "5 -> d".into()];
+        let solved = solve_circuit(&parse_and_build(&input));
+        assert_eq!(-6, solved);
+    }
+
+    #[test]
+    fn solves_slightly_branched_citcuit() {
+        let input: Vec<String> = vec![
+            "12 -> d".into(),
+            "d OR e -> b".into(),
+            "56 -> e".into(),
+            "NOT b -> a".into(),
+        ];
+        let solved = solve_circuit(&parse_and_build(&input));
+
+        assert_eq!(-61, solved);
     }
 }
