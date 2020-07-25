@@ -1,3 +1,16 @@
+use crate::read_input::read_lines;
+
+pub fn part_1() -> usize {
+    let lines = read_lines(8);
+    lines
+        .iter()
+        .map(|line| {
+            let counts = count_chars(line);
+            counts.0 - counts.1
+        })
+        .sum()
+}
+
 fn count_chars(line: &str) -> (usize, usize) {
     let escaped = line.len();
     let mut cleaned_up = 0;
