@@ -1,5 +1,12 @@
 use regex::Regex;
 use std::collections::HashMap;
+use crate::read_input::read_lines;
+
+pub fn day_07_part_1() -> isize {
+    let lines = read_lines(7);
+    let circuit = parse_and_build(&lines);
+    solve_circuit(&circuit)
+}
 
 #[derive(PartialEq, Debug)]
 enum Operation {
