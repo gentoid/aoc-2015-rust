@@ -24,7 +24,9 @@ fn increment(password: &str) -> String {
 fn contains_tree_sequential_letters(password: &str) -> bool {
     let mut sequencial_letters = 0;
     let mut chars = password.chars();
-    let mut prev_char = chars.next().expect("There must be at least one char in a password");
+    let mut prev_char = chars
+        .next()
+        .expect("There must be at least one char in a password");
 
     for char in chars {
         let (incremented, shift) = next_char(prev_char);
@@ -77,10 +79,13 @@ fn next_char(c: char) -> (char, bool) {
     let shift = c >= 'z';
 
     if c < 'a' || shift {
-        return ('a', shift)
+        return ('a', shift);
     }
 
-    (char::from_u32(c as u32 + 1).expect(&format!("Char must be incrementable: {c}")), shift)
+    (
+        char::from_u32(c as u32 + 1).expect(&format!("Char must be incrementable: {c}")),
+        shift,
+    )
 }
 
 #[cfg(test)]
@@ -112,7 +117,13 @@ mod tests {
         ];
 
         for (input, output) in data {
-            assert_eq!(contains_tree_sequential_letters(input), output, "For \"{}\" it expected to be {}", input, output);
+            assert_eq!(
+                contains_tree_sequential_letters(input),
+                output,
+                "For \"{}\" it expected to be {}",
+                input,
+                output
+            );
         }
     }
 
