@@ -11,6 +11,12 @@ pub fn part_1() -> u32 {
     find_shortest(&routes, &places)
 }
 
+pub fn part_2() -> u32 {
+    let (routes, places) = prepare_data(read_lines(9));
+
+    find_longest(&routes, &places)
+}
+
 fn without(list: &[String], element: &String) -> Vec<String> {
     list.iter()
         .cloned()
@@ -27,6 +33,13 @@ fn find_shortest(routes: &HashMap<(String, String), u32>, places: &[String]) -> 
         .iter()
         .min()
         .expect("There must be minimum value"))
+}
+
+fn find_longest(routes: &HashMap<(String, String), u32>, places: &[String]) -> u32 {
+    *(find_all_lengths(routes, &places)
+        .iter()
+        .max()
+        .expect("There must be maximum value"))
 }
 
 fn find_lengths_for_place(
@@ -150,5 +163,13 @@ mod tests {
         let actual = find_shortest(&data.0, &data.1);
 
         assert_eq!(605, actual);
+    }
+    
+    #[test]
+    fn finds_longest_path() {
+        let data = prepare_data(example_data());
+        let actual = find_longest(&data.0, &data.1);
+
+        assert_eq!(982, actual);
     }
 }

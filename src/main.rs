@@ -27,4 +27,5 @@ fn main() {
     println!("08 / 01: {}", day_08::part_1());
     println!("08 / 02: {}", day_08::part_2());
     println!("09 / 01: {}", day_09::part_1());
+    println!("09 / 02: {}", day_09::part_2());
 }
