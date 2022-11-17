@@ -1,5 +1,6 @@
 use std::collections::{HashMap, HashSet};
 
+use itertools::Itertools;
 use regex::Regex;
 
 use crate::read_input::read_lines;
@@ -7,34 +8,91 @@ use crate::read_input::read_lines;
 pub fn part_1() -> u32 {
     let (routes, places) = prepare_data(read_lines(9));
 
-    return find_shortest_path(routes, places);
+    return find_shortest_path(routes, &places);
 }
 
-fn find_shortest_path(routes: HashMap<(String, String), u32>, places: HashSet<String>) -> u32 {
-    let mut lengths = HashSet::new();
+fn without(list: &[String], element: &String) -> Vec<String> {
+    list.iter()
+        .cloned()
+        .filter(|item| item != element)
+        .collect()
+}
 
-    for from in &places {
-        let nested_lengths = find_lengths_for_place(from.to_string(), &places, &routes, 0);
-        println!("For [ {} ]: {:?}", from, nested_lengths);
-        lengths.extend(nested_lengths);
+fn concat(one: &[String], another: &[String]) -> Vec<String> {
+    one.iter().cloned().chain(another.iter().cloned()).collect()
+}
+
+fn find_lengths_for_place(
+    routes: &HashMap<(String, String), u32>,
+    path: &[String],
+    places: &[String],
+    current: &String,
+    lvl: usize
+) -> Vec<u32> {
+    let mut lengths = vec![];
+
+    // println!("{}Path: {:?}", "  ".repeat(lvl), path);
+    // println!("{}Places: {:?}", "  ".repeat(lvl), places);
+    // println!("{}Current: {}", "  ".repeat(lvl), current);
+
+    let current = current.to_owned();
+
+    for place in places.iter().cloned() {
+        let path = concat(path, &[place.to_string()]);
+        let filtered_out = &without(places, &place);
+
+        let Some(length) = routes
+            .get(&(current.clone(), place.clone())) else {
+                continue;
+            };
+
+        if filtered_out.is_empty() {
+            return vec![*length];
+        }
+
+        let found: Vec<u32> = find_lengths_for_place(routes, &path, filtered_out, &place, lvl + 1)
+            .into_iter()
+            .map(|found| found + length)
+            .collect();
+
+        lengths.extend(&found);
     }
 
-    return *(lengths.iter().min().expect("There must be minimum value"));
+    // println!("{}Lengths: {:?}", "  ".repeat(lvl), lengths);
+
+    lengths.into_iter().unique().collect()
 }
 
-fn prepare_data(lines: Vec<String>) -> (HashMap<(String, String), u32>, HashSet<String>) {
+fn find_shortest_path(routes: HashMap<(String, String), u32>, places: &[String]) -> u32 {
+    let mut lengths = vec![];
+
+    for place in places {
+        let filtered_out = &without(places, &place);
+        let found = find_lengths_for_place(&routes, &[place.to_owned()], &filtered_out, place, 0);
+
+        lengths.extend(found);
+    }
+
+    return *(lengths
+        .iter()
+        .unique()
+        .min()
+        .expect("There must be minimum value"));
+}
+
+fn prepare_data(lines: Vec<String>) -> (HashMap<(String, String), u32>, Vec<String>) {
     let mut routes = HashMap::new();
-    let mut places = HashSet::new();
+    let mut places = vec![];
 
     for line in lines {
         let (from, to, lenth) = parse_line(&line);
         routes.insert((from.clone(), to.clone()), lenth);
         routes.insert((to.clone(), from.clone()), lenth);
-        places.insert(from);
-        places.insert(to);
+        places.push(from);
+        places.push(to);
     }
 
-    (routes, places)
+    (routes, places.into_iter().unique().collect())
 }
 
 fn parse_line(line: &String) -> (String, String, u32) {
@@ -48,52 +106,6 @@ fn parse_line(line: &String) -> (String, String, u32) {
         captures[2].to_owned(),
         captures[3].parse().expect("Cannot parse capture as u32"),
     )
-}
-
-fn find_lengths_for_place(
-    from: String,
-    places: &HashSet<String>,
-    routes: &HashMap<(String, String), u32>,
-    nest_level: usize,
-) -> HashSet<u32> {
-    let mut lengths = HashSet::new();
-
-    let places: HashSet<String> = places
-        .into_iter()
-        // .map(|place| *place)
-        .filter(|place| **place != from)
-        .map(|place| place.clone())
-        .collect();
-
-    if places.is_empty() {
-        return lengths;
-    }
-
-    // println!("{}From: {}", " ".repeat(nest_level), from);
-    // println!("{}Places: {:?}", " ".repeat(nest_level), places);
-
-    if places.len() == 1 {
-        lengths.insert(0);
-        // println!("{}Lengths: {:?}", " ".repeat(nest_level), lengths);
-        return lengths;
-    }
-
-    for place in &places {
-        let length = routes
-            .get(&(from.clone(), place.to_string()))
-            .expect("There must be such a combination of places");
-        let nested_lengths = places
-            .iter()
-            .flat_map(|inner_place| {
-                find_lengths_for_place(inner_place.to_string(), &places, routes, nest_level + 1)
-            })
-            .map(|inner_length| inner_length + length);
-        lengths.extend(nested_lengths);
-    }
-
-    // println!("{}Lengths: {:?}", " ".repeat(nest_level), lengths);
-
-    return lengths;
 }
 
 #[cfg(test)]
@@ -120,10 +132,10 @@ mod tests {
         combinations.insert(("Dublin".to_string(), "Belfast".to_string()), 141);
         combinations.insert(("Belfast".to_string(), "Dublin".to_string()), 141);
 
-        let mut places = HashSet::new();
-        places.insert("London".to_string());
-        places.insert("Dublin".to_string());
-        places.insert("Belfast".to_string());
+        let mut places = vec![];
+        places.push("London".to_string());
+        places.push("Dublin".to_string());
+        places.push("Belfast".to_string());
 
         assert_eq!(combinations, actual.0);
         assert_eq!(places, actual.1);
@@ -132,7 +144,7 @@ mod tests {
     #[test]
     fn finds_shortest_path() {
         let data = prepare_data(example_data());
-        let actual = find_shortest_path(data.0, data.1);
+        let actual = find_shortest_path(data.0, &data.1);
 
         assert_eq!(605, actual);
     }
