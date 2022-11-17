@@ -1,7 +1,7 @@
 const INPUT: &str = "cqjxjnds";
 
 pub fn part_1() -> String {
-    "".to_owned()
+    next_allowed(INPUT)
 }
 
 fn next_allowed(password: &str) -> String {
