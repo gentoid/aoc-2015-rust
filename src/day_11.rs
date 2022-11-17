@@ -4,6 +4,13 @@ pub fn part_1() -> String {
     "".to_owned()
 }
 
+fn is_allowed(password: &str) -> bool {
+    password.len() == 8
+        && contains_tree_sequential_letters(&password)
+        && !contains_ambiguous_letters(&password)
+        && contains_two_pairs_of_same_letters(&password)
+}
+
 fn increment(password: &str) -> String {
     let mut output = String::new();
 
@@ -22,7 +29,7 @@ fn increment(password: &str) -> String {
 }
 
 fn contains_tree_sequential_letters(password: &str) -> bool {
-    let mut sequencial_letters = 0;
+    let mut sequencial_letters = 1;
     let mut chars = password.chars();
     let mut prev_char = chars
         .next()
@@ -38,13 +45,13 @@ fn contains_tree_sequential_letters(password: &str) -> bool {
                 return true;
             }
         } else {
-            sequencial_letters = 0;
+            sequencial_letters = 1;
         }
 
         prev_char = char;
     }
 
-    false
+    sequencial_letters >= 3
 }
 
 fn contains_ambiguous_letters(password: &str) -> bool {
@@ -72,7 +79,7 @@ fn contains_two_pairs_of_same_letters(password: &str) -> bool {
         prev_char = Some(char);
     }
 
-    false
+    pairs >= 2
 }
 
 fn next_char(c: char) -> (char, bool) {
@@ -152,6 +159,27 @@ mod tests {
 
         for (input, output) in data {
             assert_eq!(contains_two_pairs_of_same_letters(input), output);
+        }
+    }
+
+    #[test]
+    fn failed_password() {
+        let data = vec!["hijklmmn", "abbceffg", "abbcegjk", "abcdefgh", "ghijklmn"];
+
+        for password in data {
+            assert!(!is_allowed(password));
+        }
+    }
+
+    #[test]
+    fn allowed_password() {
+        let data = vec!["abcdffaa", "ghjaabcc"];
+
+        for password in data {
+            assert!(contains_tree_sequential_letters(password), "{} contais 3 sequential letters", password);
+            assert!(!contains_ambiguous_letters(password), "{} does not contain ambiguous letters", password);
+            assert!(contains_two_pairs_of_same_letters(password), "{} contains 2 pairs of same letters", password);
+            assert!(is_allowed(password), "{} should be allowed", password);
         }
     }
 }
