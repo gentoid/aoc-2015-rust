@@ -20,7 +20,7 @@ fn do_n_times(input: &str, n: usize) -> usize {
 
 fn look_and_say(input: &str) -> String {
     let mut output = String::new();
-    
+
     let mut chars = input.chars();
 
     let mut prev_char = chars.next().expect("There must be a char");
@@ -36,12 +36,11 @@ fn look_and_say(input: &str) -> String {
             repetitions = 1;
         }
     }
-    
+
     output.push_str(&format!("{repetitions}{prev_char}"));
 
     output
 }
-
 
 #[cfg(test)]
 mod tests {
