@@ -7,6 +7,10 @@ use crate::read_input::read_lines;
 pub fn part_1() -> u32 {
     let (routes, places) = prepare_data(read_lines(9));
 
+    return find_shortest_path(routes, places);
+}
+
+fn find_shortest_path(routes: HashMap<(String, String), u32>, places: HashSet<String>) -> u32 {
     let mut lengths = HashSet::new();
 
     for from in &places {
@@ -96,15 +100,17 @@ fn find_lengths_for_place(
 mod tests {
     use super::*;
 
-    #[test]
-    fn example() {
-        let data = vec![
+    fn example_data() -> Vec<String> {
+        vec![
             "London to Dublin = 464".to_string(),
             "London to Belfast = 518".to_string(),
             "Dublin to Belfast = 141".to_string(),
-        ];
+        ]
+    }
 
-        let actual = prepare_data(data);
+    #[test]
+    fn data_is_prepared_correctly() {
+        let actual = prepare_data(example_data());
 
         let mut combinations = HashMap::new();
         combinations.insert(("London".to_string(), "Dublin".to_string()), 464);
@@ -121,5 +127,13 @@ mod tests {
 
         assert_eq!(combinations, actual.0);
         assert_eq!(places, actual.1);
+    }
+
+    #[test]
+    fn finds_shortest_path() {
+        let data = prepare_data(example_data());
+        let actual = find_shortest_path(data.0, data.1);
+
+        assert_eq!(605, actual);
     }
 }
