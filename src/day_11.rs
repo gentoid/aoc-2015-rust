@@ -21,6 +21,30 @@ fn increment(password: &str) -> String {
     output.chars().rev().collect()
 }
 
+fn contains_tree_sequential_letters(password: &str) -> bool {
+    let mut sequencial_letters = 0;
+    let mut chars = password.chars();
+    let mut prev_char = chars.next().expect("There must be at least one char in a password");
+
+    for char in chars {
+        let (incremented, shift) = next_char(prev_char);
+
+        if incremented == char && !shift {
+            sequencial_letters += 1;
+
+            if sequencial_letters >= 3 {
+                return true;
+            }
+        } else {
+            sequencial_letters = 0;
+        }
+
+        prev_char = char;
+    }
+
+    false
+}
+
 fn next_char(c: char) -> (char, bool) {
     let shift = c >= 'z';
 
@@ -47,6 +71,20 @@ mod tests {
 
         for (input, output) in data {
             assert_eq!(&increment(input), output);
+        }
+    }
+
+    #[test]
+    fn correcly_detects_three_letters() {
+        let data = vec![
+            ("abcdefgh", true),
+            ("abbccdde", false),
+            ("edefgkor", true),
+            ("abdeghkl", false),
+        ];
+
+        for (input, output) in data {
+            assert_eq!(contains_tree_sequential_letters(input), output, "For \"{}\" it expected to be {}", input, output);
         }
     }
 }
