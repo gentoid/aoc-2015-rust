@@ -49,6 +49,30 @@ fn contains_ambiguous_letters(password: &str) -> bool {
     password.contains(['i', 'o', 'l'])
 }
 
+fn contains_two_pairs_of_same_letters(password: &str) -> bool {
+    let mut pairs = 0;
+    let mut prev_char = None;
+
+    for char in password.chars() {
+        if let Some(prev_char_value) = prev_char {
+            if prev_char_value == char {
+                pairs += 1;
+
+                if pairs >= 2 {
+                    return true;
+                }
+
+                prev_char = None;
+                continue;
+            }
+        };
+
+        prev_char = Some(char);
+    }
+
+    false
+}
+
 fn next_char(c: char) -> (char, bool) {
     let shift = c >= 'z';
 
@@ -103,6 +127,20 @@ mod tests {
 
         for (input, output) in data {
             assert_eq!(contains_ambiguous_letters(input), output);
+        }
+    }
+
+    #[test]
+    fn detects_two_pairs_of_same_letters() {
+        let data = vec![
+            ("aaacvdsr", false),
+            ("aaacvddd", true),
+            ("aabberwe", true),
+            ("erffddef", true),
+        ];
+
+        for (input, output) in data {
+            assert_eq!(contains_two_pairs_of_same_letters(input), output);
         }
     }
 }
