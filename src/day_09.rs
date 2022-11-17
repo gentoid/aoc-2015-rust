@@ -1,4 +1,4 @@
-use std::collections::{HashMap, HashSet};
+use std::collections::HashMap;
 
 use itertools::Itertools;
 use regex::Regex;
@@ -8,7 +8,7 @@ use crate::read_input::read_lines;
 pub fn part_1() -> u32 {
     let (routes, places) = prepare_data(read_lines(9));
 
-    return find_shortest_path(routes, &places);
+    find_shortest(&routes, &places)
 }
 
 fn without(list: &[String], element: &String) -> Vec<String> {
@@ -22,12 +22,19 @@ fn concat(one: &[String], another: &[String]) -> Vec<String> {
     one.iter().cloned().chain(another.iter().cloned()).collect()
 }
 
+fn find_shortest(routes: &HashMap<(String, String), u32>, places: &[String]) -> u32 {
+    *(find_all_lengths(routes, &places)
+        .iter()
+        .min()
+        .expect("There must be minimum value"))
+}
+
 fn find_lengths_for_place(
     routes: &HashMap<(String, String), u32>,
     path: &[String],
     places: &[String],
     current: &String,
-    lvl: usize
+    lvl: usize,
 ) -> Vec<u32> {
     let mut lengths = vec![];
 
@@ -63,7 +70,7 @@ fn find_lengths_for_place(
     lengths.into_iter().unique().collect()
 }
 
-fn find_shortest_path(routes: HashMap<(String, String), u32>, places: &[String]) -> u32 {
+fn find_all_lengths(routes: &HashMap<(String, String), u32>, places: &[String]) -> Vec<u32> {
     let mut lengths = vec![];
 
     for place in places {
@@ -73,11 +80,7 @@ fn find_shortest_path(routes: HashMap<(String, String), u32>, places: &[String])
         lengths.extend(found);
     }
 
-    return *(lengths
-        .iter()
-        .unique()
-        .min()
-        .expect("There must be minimum value"));
+    lengths.into_iter().unique().collect()
 }
 
 fn prepare_data(lines: Vec<String>) -> (HashMap<(String, String), u32>, Vec<String>) {
@@ -144,7 +147,7 @@ mod tests {
     #[test]
     fn finds_shortest_path() {
         let data = prepare_data(example_data());
-        let actual = find_shortest_path(data.0, &data.1);
+        let actual = find_shortest(&data.0, &data.1);
 
         assert_eq!(605, actual);
     }
