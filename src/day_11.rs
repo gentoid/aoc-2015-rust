@@ -4,6 +4,16 @@ pub fn part_1() -> String {
     "".to_owned()
 }
 
+fn next_allowed(password: &str) -> String {
+    let mut next_password = password.to_owned();
+
+    while !is_allowed(&next_password) {
+        next_password = increment(&next_password);
+    }
+
+    next_password
+}
+
 fn is_allowed(password: &str) -> bool {
     password.len() == 8
         && contains_tree_sequential_letters(&password)
@@ -181,5 +191,11 @@ mod tests {
             assert!(contains_two_pairs_of_same_letters(password), "{} contains 2 pairs of same letters", password);
             assert!(is_allowed(password), "{} should be allowed", password);
         }
+    }
+
+    #[test]
+    fn finds_next_allowed() {
+        assert_eq!(next_allowed("abcdefgh"), "abcdffaa");
+        assert_eq!(next_allowed("ghijklmn"), "ghjaabcc");
     }
 }
