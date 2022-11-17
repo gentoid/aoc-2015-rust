@@ -1,9 +1,17 @@
 const INPUT: &str = "1321131112";
 
 pub fn part_1() -> usize {
-    let mut data = INPUT.to_owned();
+    do_n_times(INPUT, 40)
+}
 
-    for _ in 1..=40 {
+pub fn part_2() -> usize {
+    do_n_times(INPUT, 50)
+}
+
+fn do_n_times(input: &str, n: usize) -> usize {
+    let mut data = input.to_owned();
+
+    for _ in 1..=n {
         data = look_and_say(&data);
     }
 
