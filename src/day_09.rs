@@ -25,8 +25,9 @@ fn prepare_data(lines: Vec<String>) -> (HashMap<(String, String), u32>, HashSet<
     for line in lines {
         let (from, to, lenth) = parse_line(&line);
         routes.insert((from.clone(), to.clone()), lenth);
-        routes.insert((to, from.clone()), lenth);
+        routes.insert((to.clone(), from.clone()), lenth);
         places.insert(from);
+        places.insert(to);
     }
 
     (routes, places)
@@ -97,10 +98,28 @@ mod tests {
 
     #[test]
     fn example() {
-        let data = r#"London to Dublin = 464
-            London to Belfast = 518
-            Dublin to Belfast = 141"#;
+        let data = vec![
+            "London to Dublin = 464".to_string(),
+            "London to Belfast = 518".to_string(),
+            "Dublin to Belfast = 141".to_string(),
+        ];
 
-        // TODO: write more test cases
+        let actual = prepare_data(data);
+
+        let mut combinations = HashMap::new();
+        combinations.insert(("London".to_string(), "Dublin".to_string()), 464);
+        combinations.insert(("Dublin".to_string(), "London".to_string()), 464);
+        combinations.insert(("London".to_string(), "Belfast".to_string()), 518);
+        combinations.insert(("Belfast".to_string(), "London".to_string()), 518);
+        combinations.insert(("Dublin".to_string(), "Belfast".to_string()), 141);
+        combinations.insert(("Belfast".to_string(), "Dublin".to_string()), 141);
+
+        let mut places = HashSet::new();
+        places.insert("London".to_string());
+        places.insert("Dublin".to_string());
+        places.insert("Belfast".to_string());
+
+        assert_eq!(combinations, actual.0);
+        assert_eq!(places, actual.1);
     }
 }
