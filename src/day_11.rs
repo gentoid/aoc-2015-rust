@@ -45,6 +45,10 @@ fn contains_tree_sequential_letters(password: &str) -> bool {
     false
 }
 
+fn contains_ambiguous_letters(password: &str) -> bool {
+    password.contains(['i', 'o', 'l'])
+}
+
 fn next_char(c: char) -> (char, bool) {
     let shift = c >= 'z';
 
@@ -85,6 +89,20 @@ mod tests {
 
         for (input, output) in data {
             assert_eq!(contains_tree_sequential_letters(input), output, "For \"{}\" it expected to be {}", input, output);
+        }
+    }
+
+    #[test]
+    fn detects_ambiguous_letters() {
+        let data = vec![
+            ("abcdefgh", false),
+            ("ikjfythd", true),
+            ("jklmnpdd", true),
+            ("opqrstvw", true),
+        ];
+
+        for (input, output) in data {
+            assert_eq!(contains_ambiguous_letters(input), output);
         }
     }
 }
