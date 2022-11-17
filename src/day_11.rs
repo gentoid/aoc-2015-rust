@@ -186,9 +186,21 @@ mod tests {
         let data = vec!["abcdffaa", "ghjaabcc"];
 
         for password in data {
-            assert!(contains_tree_sequential_letters(password), "{} contais 3 sequential letters", password);
-            assert!(!contains_ambiguous_letters(password), "{} does not contain ambiguous letters", password);
-            assert!(contains_two_pairs_of_same_letters(password), "{} contains 2 pairs of same letters", password);
+            assert!(
+                contains_tree_sequential_letters(password),
+                "{} contais 3 sequential letters",
+                password
+            );
+            assert!(
+                !contains_ambiguous_letters(password),
+                "{} does not contain ambiguous letters",
+                password
+            );
+            assert!(
+                contains_two_pairs_of_same_letters(password),
+                "{} contains 2 pairs of same letters",
+                password
+            );
             assert!(is_allowed(password), "{} should be allowed", password);
         }
     }
