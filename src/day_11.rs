@@ -4,8 +4,12 @@ pub fn part_1() -> String {
     next_allowed(INPUT)
 }
 
+pub fn part_2() -> String {
+    next_allowed(&next_allowed(INPUT))
+}
+
 fn next_allowed(password: &str) -> String {
-    let mut next_password = password.to_owned();
+    let mut next_password = increment(password);
 
     while !is_allowed(&next_password) {
         next_password = increment(&next_password);
