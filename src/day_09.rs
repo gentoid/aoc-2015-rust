@@ -164,7 +164,7 @@ mod tests {
 
         assert_eq!(605, actual);
     }
-    
+
     #[test]
     fn finds_longest_path() {
         let data = prepare_data(example_data());
