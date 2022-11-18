@@ -1,5 +1,7 @@
-pub fn part_1() {
-    //
+use crate::read_input::read_input_to_string;
+
+pub fn part_1() -> i32 {
+    get_numbers_from_json(&read_input_to_string(12)).iter().sum()
 }
 
 fn get_numbers_from_json(input: &str) -> Vec<i32> {
