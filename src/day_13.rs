@@ -25,47 +25,41 @@ fn parse_line(input: &str) -> (String, String, i32) {
     )
 }
 
-fn find_combinations(options: &HappinessOptions, guests: &[String]) -> Vec<Vec<Seating>> {
-    let mut output = vec![];
+fn full_combination(guests: &[String]) -> Vec<Vec<String>> {
+    match guests {
+        [] => vec![],
+        [guest] => vec![vec![guest.clone()]],
+        _ => {
+            let mut output = vec![];
 
-    let first_guest = guests.first().unwrap();
-    let filtered = without(guests, first_guest);
+            for guest in guests {
+                for mut combination in full_combination(&without(guests, guest)) {
+                    combination.insert(0, guest.clone());
+                    output.push(combination);
+                }
+            }
 
-    if filtered.len() == 1 {
-        let mut tmp = vec![];
-
-        let last_guest = guests.last().unwrap();
-
-        let happiness = options
-            .get(&(first_guest.clone(), last_guest.clone()))
-            .unwrap();
-        let reverse_happiness = options
-            .get(&(last_guest.clone(), first_guest.clone()))
-            .unwrap();
-
-        tmp.push((*happiness, first_guest.clone(), *happiness));
-        tmp.push((*reverse_happiness, last_guest.clone(), *reverse_happiness));
-        output.push(tmp);
-
-        let mut tmp = vec![];
-        tmp.push((*reverse_happiness, last_guest.clone(), *reverse_happiness));
-        tmp.push((*happiness, first_guest.clone(), *happiness));
-        output.push(tmp);
-    } else {
-        for mut inner in find_combinations(options, &filtered) {
-            let happiness = options
-                .get(&(first_guest.clone(), inner.last().unwrap().1.clone()))
-                .unwrap();
-            let inner_first = inner.first().unwrap();
-            let inner_last = inner.last().unwrap();
-
-            let mut tmp = vec![(*happiness, first_guest.clone(), *happiness)];
-            tmp.extend(inner);
-            output.push(tmp);
+            output
         }
     }
+}
 
-    return output;
+fn find_combinations(guests: &[String]) -> Vec<Vec<String>> {
+    match guests {
+        [] | [_] => vec![],
+        _ => {
+            let first = guests.first().unwrap();
+            let filtered = without(guests, first);
+
+            let mut output = vec![];
+            for mut combination in full_combination(&filtered) {
+                combination.insert(0, first.clone());
+                output.push(combination);
+            }
+
+            output
+        }
+    }
 }
 
 #[cfg(test)]
@@ -111,34 +105,26 @@ mod tests {
     }
 
     fn guests(length: usize) -> Vec<String> {
-        vec!["Alice".to_owned(), "Bob".to_owned(), "Clark".to_owned()].into_iter().take(length).collect()
+        vec!["Alice".to_owned(), "Bob".to_owned(), "Clark".to_owned()]
+            .into_iter()
+            .take(length)
+            .collect()
     }
 
     #[test]
     fn finds_seating_for_two_persons() {
-        let expected = vec![
-            vec![(57, "Alice".to_owned(), 57), (10, "Bob".to_owned(), 10)],
-            vec![(10, "Bob".to_owned(), 10), (57, "Alice".to_owned(), 57)],
-        ];
+        let expected = vec![vec!["Alice".to_owned(), "Bob".to_owned()]];
 
-        assert_eq!(find_combinations(&options(), &guests(2)), expected);
+        assert_eq!(find_combinations(&guests(2)), expected);
     }
 
     #[test]
     fn finds_seating_for_three_persons() {
         let expected = vec![
-            vec![
-                (4, "Alice".to_owned(), 57),
-                (10, "Bob".to_owned(), -1),
-                (3, "Clark".to_owned(), 6),
-            ],
-            vec![
-                (57, "Alice".to_owned(), 4),
-                (6, "Clark".to_owned(), 3),
-                (-1, "Bob".to_owned(), 10),
-            ],
+            vec!["Alice".to_owned(), "Bob".to_owned(), "Clark".to_owned()],
+            vec!["Alice".to_owned(), "Clark".to_owned(), "Bob".to_owned()],
         ];
 
-        assert_eq!(find_combinations(&options(), &guests(3)), expected);
+        assert_eq!(find_combinations(&guests(3)), expected);
     }
 }
