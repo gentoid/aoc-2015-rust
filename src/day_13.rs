@@ -28,17 +28,34 @@ fn find_combinations(data: &Vec<Happiness>) -> Vec<Vec<Seating>> {
     let (filtered_first, filtered_second, filtered_out) = split_by_person(&first.0, data);
 
     if filtered_out.is_empty() {
-        let second = data.get(1).unwrap();
+        let last = data.get(1).unwrap();
         let mut tmp = vec![];
-        tmp.push((second.2, second.0.clone(), second.2));
+        tmp.push((last.2, last.0.clone(), last.2));
         tmp.push((first.2, first.0.clone(), first.2));
         output.push(tmp);
+
+        let mut tmp = vec![];
+        tmp.push((first.2, first.0.clone(), first.2));
+        tmp.push((last.2, last.0.clone(), last.2));
+        output.push(tmp);
+    } else {
+        for mut inner in find_combinations(&filtered_out) {
+            let inner_first = inner.first().unwrap();
+            let inner_last = inner.last().unwrap();
+
+            let mut tmp = vec![(first.2, first.0.clone(), first.2)];
+            tmp.extend(inner);
+            output.push(tmp);
+        }
     }
 
     return output;
 }
 
-fn split_by_person(name: &str, list: &Vec<Happiness>) -> (Vec<Happiness>, Vec<Happiness>, Vec<Happiness>) {
+fn split_by_person(
+    name: &str,
+    list: &Vec<Happiness>,
+) -> (Vec<Happiness>, Vec<Happiness>, Vec<Happiness>) {
     let mut filtered_first = vec![];
     let mut filtered_second = vec![];
     let mut filtered_out = vec![];
@@ -92,10 +109,37 @@ mod tests {
             ("Bob".to_owned(), "Alice".to_owned(), 10),
         ];
 
-        let expected = vec![vec![
-            (10, "Bob".to_owned(), 10),
-            (57, "Alice".to_owned(), 57),
-        ]];
+        let expected = vec![
+            vec![(10, "Bob".to_owned(), 10), (57, "Alice".to_owned(), 57)],
+            vec![(57, "Alice".to_owned(), 57), (10, "Bob".to_owned(), 10)],
+        ];
+
+        assert_eq!(find_combinations(&data), expected);
+    }
+
+    #[test]
+    fn finds_seating_for_three_persons() {
+        let data = vec![
+            ("Alice".to_owned(), "Bob".to_owned(), 57),
+            ("Alice".to_owned(), "Clark".to_owned(), 4),
+            ("Bob".to_owned(), "Alice".to_owned(), 10),
+            ("Bob".to_owned(), "Clark".to_owned(), -1),
+            ("Clark".to_owned(), "Alice".to_owned(), 6),
+            ("Clark".to_owned(), "Bob".to_owned(), 3),
+        ];
+
+        let expected = vec![
+            vec![
+                (57, "Alice".to_owned(), 4),
+                (6, "Clark".to_owned(), 3),
+                (-1, "Bob".to_owned(), 10),
+            ],
+            vec![
+                (4, "Alice".to_owned(), 57),
+                (10, "Bob".to_owned(), -1),
+                (3, "Clark".to_owned(), 6),
+            ],
+        ];
 
         assert_eq!(find_combinations(&data), expected);
     }
