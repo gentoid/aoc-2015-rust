@@ -12,6 +12,7 @@ mod day_11;
 mod day_12;
 mod day_13;
 mod read_input;
+mod utils;
 
 fn main() {
     println!("01 / 01: {}", aoc_01::aoc_01_01());

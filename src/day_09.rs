@@ -3,7 +3,10 @@ use std::collections::HashMap;
 use itertools::Itertools;
 use regex::Regex;
 
-use crate::read_input::read_lines;
+use crate::{
+    read_input::read_lines,
+    utils::{concat, without},
+};
 
 pub fn part_1() -> u32 {
     let (routes, places) = prepare_data(read_lines(9));
@@ -15,17 +18,6 @@ pub fn part_2() -> u32 {
     let (routes, places) = prepare_data(read_lines(9));
 
     find_longest(&routes, &places)
-}
-
-fn without(list: &[String], element: &String) -> Vec<String> {
-    list.iter()
-        .cloned()
-        .filter(|item| item != element)
-        .collect()
-}
-
-fn concat(one: &[String], another: &[String]) -> Vec<String> {
-    one.iter().cloned().chain(another.iter().cloned()).collect()
 }
 
 fn find_shortest(routes: &HashMap<(String, String), u32>, places: &[String]) -> u32 {
