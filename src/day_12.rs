@@ -56,6 +56,11 @@ fn get_numbers_without_red(input: &str, nested_type: NestedType) -> (String, Vec
     let mut contains_red = false;
 
     while let Some(char) = chars.next() {
+        if is_inside_string && char != '"' {
+            string_value.push(char);
+            continue;
+        }
+
         match char {
             '"' => {
                 if is_inside_string {
@@ -66,15 +71,11 @@ fn get_numbers_without_red(input: &str, nested_type: NestedType) -> (String, Vec
                 is_inside_string = !is_inside_string;
             }
             '-' => {
-                if !is_inside_string && number_value.is_empty() {
+                if number_value.is_empty() {
                     number_value.push(char);
                 }
             }
-            '0'..='9' => {
-                if !is_inside_string {
-                    number_value.push(char);
-                }
-            }
+            '0'..='9' => number_value.push(char),
             '[' => {
                 let (left_string, inner_numbers) =
                     get_numbers_without_red(chars.as_str(), NestedType::Array);
@@ -110,11 +111,7 @@ fn get_numbers_without_red(input: &str, nested_type: NestedType) -> (String, Vec
                     number_value = String::new();
                 }
             }
-            _ => {
-                if is_inside_string {
-                    string_value.push(char);
-                }
-            }
+            _ => continue,
         }
     }
 
