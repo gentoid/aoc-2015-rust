@@ -64,6 +64,45 @@ fn combinations_with_first(guests: &[String], first_guest: &str) -> Vec<Vec<Stri
     output
 }
 
+fn fill_in_happiness(
+    options: &HappinessOptions,
+    combinations: &Vec<Vec<String>>,
+) -> Vec<Vec<Seating>> {
+    let mut output = vec![];
+
+    for combination in combinations {
+        let mut inner = vec![];
+
+        for (index, guest) in combination.iter().enumerate() {
+            let left_guest = if index == 0 {
+                combination.last()
+            } else {
+                combination.get(index - 1)
+            }
+            .unwrap()
+            .clone();
+
+            let right_guest = if index < combination.len() - 1 {
+                combination.get(index + 1)
+            } else {
+                combination.first()
+            }
+            .unwrap()
+            .clone();
+
+            inner.push((
+                *options.get(&(guest.clone(), left_guest)).unwrap(),
+                guest.clone(),
+                *options.get(&(guest.clone(), right_guest)).unwrap(),
+            ));
+        }
+
+        output.push(inner);
+    }
+
+    output
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -183,5 +222,83 @@ mod tests {
         ];
 
         assert_eq!(find_combinations(&guests(4)), expected);
+    }
+
+    #[test]
+    fn fills_in_happiness_for_2_guests() {
+        let expected = vec![vec![
+            (57, "Alice".to_owned(), 57),
+            (10, "Bob".to_owned(), 10),
+        ]];
+
+        let actual = fill_in_happiness(&options(), &find_combinations(&guests(2)));
+
+        assert_eq!(expected, actual);
+    }
+
+    #[test]
+    fn fills_in_happiness_for_3_guests() {
+        let expected = vec![
+            vec![
+                (4, "Alice".to_owned(), 57),
+                (10, "Bob".to_owned(), -1),
+                (3, "Clark".to_owned(), 6),
+            ],
+            vec![
+                (57, "Alice".to_owned(), 4),
+                (6, "Clark".to_owned(), 3),
+                (-1, "Bob".to_owned(), 10),
+            ],
+        ];
+
+        let actual = fill_in_happiness(&options(), &find_combinations(&guests(3)));
+
+        assert_eq!(expected, actual);
+    }
+
+    #[test]
+    fn fills_in_happiness_for_4_guests() {
+        let expected = vec![
+            vec![
+                (9, "Alice".to_owned(), 57),
+                (10, "Bob".to_owned(), -1),
+                (3, "Clark".to_owned(), 12),
+                (7, "Dan".to_owned(), -12),
+            ],
+            vec![
+                (4, "Alice".to_owned(), 57),
+                (10, "Bob".to_owned(), -3),
+                (32, "Dan".to_owned(), 7),
+                (12, "Clark".to_owned(), 6),
+            ],
+            vec![
+                (9, "Alice".to_owned(), 4),
+                (6, "Clark".to_owned(), 3),
+                (-1, "Bob".to_owned(), -3),
+                (32, "Dan".to_owned(), -12),
+            ],
+            vec![
+                (57, "Alice".to_owned(), 4),
+                (6, "Clark".to_owned(), 12),
+                (7, "Dan".to_owned(), 32),
+                (-3, "Bob".to_owned(), 10),
+            ],
+            vec![
+                (4, "Alice".to_owned(), 9),
+                (-12, "Dan".to_owned(), 32),
+                (-3, "Bob".to_owned(), -1),
+                (3, "Clark".to_owned(), 6),
+            ],
+            vec![
+                (57, "Alice".to_owned(), 9),
+                (-12, "Dan".to_owned(), 7),
+                (12, "Clark".to_owned(), 3),
+                (-1, "Bob".to_owned(), 10),
+            ],
+        ];
+
+        let actual = fill_in_happiness(&options(), &find_combinations(&guests(4)));
+
+        assert_eq!(expected, actual);
     }
 }
