@@ -1,4 +1,4 @@
-pub fn without(list: &[String], element: &String) -> Vec<String> {
+pub fn without(list: &[String], element: &str) -> Vec<String> {
     list.iter()
         .cloned()
         .filter(|item| item != element)

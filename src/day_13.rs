@@ -92,7 +92,7 @@ fn combinations_with_first(guests: &[String], first_guest: &str) -> Vec<Vec<Stri
 
 fn fill_in_happiness(
     options: &HappinessOptions,
-    combinations: &Vec<Vec<String>>,
+    combinations: &[Vec<String>],
 ) -> Vec<Vec<Seating>> {
     let mut output = vec![];
 

@@ -93,7 +93,7 @@ fn parse_line(line: &str) -> (String, Operation) {
     unreachable!("Seems we've got wrong operations: {}", line);
 }
 
-fn parse_and_build(lines: &Vec<String>) -> Circuit {
+fn parse_and_build(lines: &[String]) -> Circuit {
     let ops = lines
         .iter()
         .map(|line| parse_line(line))

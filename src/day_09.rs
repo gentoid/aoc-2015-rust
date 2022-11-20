@@ -38,7 +38,7 @@ fn find_lengths_for_place(
     routes: &HashMap<(String, String), u32>,
     path: &[String],
     places: &[String],
-    current: &String,
+    current: &str,
     lvl: usize,
 ) -> Vec<u32> {
     let mut lengths = vec![];
@@ -103,7 +103,7 @@ fn prepare_data(lines: Vec<String>) -> (HashMap<(String, String), u32>, Vec<Stri
     (routes, places.into_iter().unique().collect())
 }
 
-fn parse_line(line: &String) -> (String, String, u32) {
+fn parse_line(line: &str) -> (String, String, u32) {
     let route: Regex = Regex::new(r"(\w+) to (\w+) = (\d+)").unwrap();
     let captures = route
         .captures(line)
