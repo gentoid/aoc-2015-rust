@@ -5,27 +5,18 @@ use regex::Regex;
 use crate::{utils::without, read_input::read_lines};
 
 pub fn part_1() -> i32 {
-    let mut options = HashMap::new();
-
-    let mut guests = HashSet::new();
-
-    for line in read_lines(13) {
-        let (guest, neibour, happiness) = parse_line(&line);
-        options.insert((guest.clone(), neibour.clone()), happiness);
-        guests.insert(guest);
-        guests.insert(neibour);
-    }
-
-    let combinations = find_combinations(&Vec::from_iter(guests));
-
-    fill_in_happiness(&options, &combinations).iter().map(overall_happiness).max().unwrap()
+    find_max_happiness(HashSet::new())
 }
 
 pub fn part_2() -> i32 {
-    let mut options = HashMap::new();
-
     let mut guests = HashSet::new();
     guests.insert("Me".to_owned());
+
+    find_max_happiness(guests)
+}
+
+fn find_max_happiness(mut guests: HashSet<String>) -> i32 {
+    let mut options = HashMap::new();
 
     for line in read_lines(13) {
         let (guest, neibour, happiness) = parse_line(&line);
