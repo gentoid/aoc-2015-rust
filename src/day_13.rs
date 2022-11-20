@@ -1,8 +1,25 @@
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
 use regex::Regex;
 
-use crate::utils::without;
+use crate::{utils::without, read_input::read_lines};
+
+pub fn part_1() -> i32 {
+    let mut options = HashMap::new();
+
+    let mut guests = HashSet::new();
+
+    for line in read_lines(13) {
+        let (guest, neibour, happiness) = parse_line(&line);
+        options.insert((guest.clone(), neibour.clone()), happiness);
+        guests.insert(guest);
+        guests.insert(neibour);
+    }
+
+    let combinations = find_combinations(&Vec::from_iter(guests));
+
+    fill_in_happiness(&options, &combinations).iter().map(overall_happiness).max().unwrap()
+}
 
 type HappinessOptions = HashMap<(String, String), i32>;
 type Seating = (i32, String, i32);
@@ -101,6 +118,10 @@ fn fill_in_happiness(
     }
 
     output
+}
+
+fn overall_happiness(seatings: &Vec<Seating>) -> i32 {
+    seatings.iter().map(|(one, _, two)| one + two).sum()
 }
 
 #[cfg(test)]
