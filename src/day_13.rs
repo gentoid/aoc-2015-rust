@@ -33,10 +33,7 @@ fn full_combination(guests: &[String]) -> Vec<Vec<String>> {
             let mut output = vec![];
 
             for guest in guests {
-                for mut combination in full_combination(&without(guests, guest)) {
-                    combination.insert(0, guest.clone());
-                    output.push(combination);
-                }
+                output.extend(combinations_with_first(&without(guests, guest), guest));
             }
 
             output
@@ -49,17 +46,22 @@ fn find_combinations(guests: &[String]) -> Vec<Vec<String>> {
         [] | [_] => vec![],
         _ => {
             let first = guests.first().unwrap();
-            let filtered = without(guests, first);
+            let filtered = without(guests, &first);
 
-            let mut output = vec![];
-            for mut combination in full_combination(&filtered) {
-                combination.insert(0, first.clone());
-                output.push(combination);
-            }
-
-            output
+            combinations_with_first(&filtered, &first)
         }
     }
+}
+
+fn combinations_with_first(guests: &[String], first_guest: &str) -> Vec<Vec<String>> {
+    let mut output = vec![];
+
+    for mut combination in full_combination(guests) {
+        combination.insert(0, first_guest.to_string());
+        output.push(combination);
+    }
+
+    output
 }
 
 #[cfg(test)]
