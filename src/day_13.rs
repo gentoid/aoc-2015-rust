@@ -98,35 +98,55 @@ mod tests {
 
         options.insert(("Alice".to_owned(), "Bob".to_owned()), 57);
         options.insert(("Alice".to_owned(), "Clark".to_owned()), 4);
+        options.insert(("Alice".to_owned(), "Dan".to_owned()), 9);
         options.insert(("Bob".to_owned(), "Alice".to_owned()), 10);
         options.insert(("Bob".to_owned(), "Clark".to_owned()), -1);
+        options.insert(("Bob".to_owned(), "Dan".to_owned()), -3);
         options.insert(("Clark".to_owned(), "Alice".to_owned()), 6);
         options.insert(("Clark".to_owned(), "Bob".to_owned()), 3);
+        options.insert(("Clark".to_owned(), "Dan".to_owned()), 12);
+        options.insert(("Dan".to_owned(), "Alice".to_owned()), -12);
+        options.insert(("Dan".to_owned(), "Bob".to_owned()), 32);
+        options.insert(("Dan".to_owned(), "Clark".to_owned()), 7);
 
         options
     }
 
     fn guests(length: usize) -> Vec<String> {
-        vec!["Alice".to_owned(), "Bob".to_owned(), "Clark".to_owned()]
+        vec!["Alice".to_owned(), "Bob".to_owned(), "Clark".to_owned(), "Dan".to_owned()]
             .into_iter()
             .take(length)
             .collect()
     }
 
     #[test]
-    fn finds_seating_for_two_persons() {
+    fn finds_combinations_for_two_persons() {
         let expected = vec![vec!["Alice".to_owned(), "Bob".to_owned()]];
 
         assert_eq!(find_combinations(&guests(2)), expected);
     }
 
     #[test]
-    fn finds_seating_for_three_persons() {
+    fn finds_combinations_for_three_persons() {
         let expected = vec![
             vec!["Alice".to_owned(), "Bob".to_owned(), "Clark".to_owned()],
             vec!["Alice".to_owned(), "Clark".to_owned(), "Bob".to_owned()],
         ];
 
         assert_eq!(find_combinations(&guests(3)), expected);
+    }
+
+    #[test]
+    fn finds_combinations_for_four_persons() {
+        let expected = vec![
+            vec!["Alice".to_owned(), "Bob".to_owned(), "Clark".to_owned(), "Dan".to_owned()],
+            vec!["Alice".to_owned(), "Bob".to_owned(), "Dan".to_owned(), "Clark".to_owned()],
+            vec!["Alice".to_owned(), "Clark".to_owned(), "Bob".to_owned(), "Dan".to_owned()],
+            vec!["Alice".to_owned(), "Clark".to_owned(), "Dan".to_owned(), "Bob".to_owned()],
+            vec!["Alice".to_owned(), "Dan".to_owned(), "Bob".to_owned(), "Clark".to_owned()],
+            vec!["Alice".to_owned(), "Dan".to_owned(), "Clark".to_owned(), "Bob".to_owned()],
+        ];
+
+        assert_eq!(find_combinations(&guests(4)), expected);
     }
 }
