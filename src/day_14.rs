@@ -162,8 +162,8 @@ mod tests {
 
     #[test]
     fn part_2_competition_140_seconds() {
-        let mut comet_data = ReindeerData::new(comet_reindeer());
-        let mut dancer_data = ReindeerData::new(dancer_reindeer());
+        let comet_data = ReindeerData::new(comet_reindeer());
+        let dancer_data = ReindeerData::new(dancer_reindeer());
 
         let mut reindeers = vec![comet_data, dancer_data];
 
@@ -177,8 +177,8 @@ mod tests {
 
     #[test]
     fn part_2_competition_1000_seconds() {
-        let mut comet_data = ReindeerData::new(comet_reindeer());
-        let mut dancer_data = ReindeerData::new(dancer_reindeer());
+        let comet_data = ReindeerData::new(comet_reindeer());
+        let dancer_data = ReindeerData::new(dancer_reindeer());
 
         let mut reindeers = vec![comet_data, dancer_data];
 
