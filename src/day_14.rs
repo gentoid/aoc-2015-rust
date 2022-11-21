@@ -1,3 +1,27 @@
+pub fn part_1() -> u32 {
+    let time = 2503;
+    vec![comet_reindeer(), dancer_reindeer()]
+        .iter()
+        .map(|reindeer| distance(reindeer, time))
+        .max()
+        .unwrap()
+}
+
+pub fn part_2() -> u32 {
+    let mut comet_data = ReindeerData::new(comet_reindeer());
+    let mut dancer_data = ReindeerData::new(dancer_reindeer());
+
+    for _ in 0..2503 {
+        tick_reindeers(&mut vec![&mut comet_data, &mut dancer_data]);
+    }
+
+    vec![comet_data.points, dancer_data.points]
+        .iter()
+        .max()
+        .unwrap()
+        .clone()
+}
+
 struct Reindeer {
     flying_speed: u32,
     flying_time: u32,
@@ -49,30 +73,6 @@ impl ReindeerData {
             }
         }
     }
-}
-
-pub fn part_1() -> u32 {
-    let time = 2503;
-    vec![comet_reindeer(), dancer_reindeer()]
-        .iter()
-        .map(|reindeer| distance(reindeer, time))
-        .max()
-        .unwrap()
-}
-
-pub fn part_2() -> u32 {
-    let mut comet_data = ReindeerData::new(comet_reindeer());
-    let mut dancer_data = ReindeerData::new(dancer_reindeer());
-
-    for _ in 0..2503 {
-        tick_reindeers(&mut vec![&mut comet_data, &mut dancer_data]);
-    }
-
-    vec![comet_data.points, dancer_data.points]
-        .iter()
-        .max()
-        .unwrap()
-        .clone()
 }
 
 fn comet_reindeer() -> Reindeer {
