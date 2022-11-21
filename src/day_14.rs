@@ -65,7 +65,7 @@ pub fn part_2() -> u32 {
     let mut dancer_data = ReindeerData::new(dancer_reindeer());
 
     for _ in 0..2503 {
-        tick_reindeers(&mut comet_data, &mut dancer_data);
+        tick_reindeers(&mut vec![&mut comet_data, &mut dancer_data]);
     }
 
     vec![comet_data.points, dancer_data.points]
@@ -108,17 +108,21 @@ fn distance(reindeer: &Reindeer, time: u32) -> u32 {
     cicles * km_per_cicle + distance(reindeer, time - cicles * full_cicle)
 }
 
-fn tick_reindeers(comet: &mut ReindeerData, dancer: &mut ReindeerData) {
-    comet.tick();
-    dancer.tick();
+fn tick_reindeers(reindeers: &mut Vec<&mut ReindeerData>) {
+    for reindeer_data in reindeers.iter_mut() {
+        reindeer_data.tick();
+    }
 
-    if comet.distance > dancer.distance {
-        comet.points += 1;
-    } else if dancer.distance > comet.distance {
-        dancer.points += 1;
-    } else {
-        comet.points += 1;
-        dancer.points += 1;
+    let max_distance = reindeers
+        .iter()
+        .map(|reindeer_data| reindeer_data.distance)
+        .max()
+        .unwrap();
+
+    for reindeer_data in reindeers {
+        if reindeer_data.distance == max_distance {
+            reindeer_data.points += 1;
+        }
     }
 }
 
@@ -150,7 +154,7 @@ mod tests {
         let mut dancer_data = ReindeerData::new(dancer_reindeer());
 
         for _ in 0..140 {
-            tick_reindeers(&mut comet_data, &mut dancer_data);
+            tick_reindeers(&mut vec![&mut comet_data, &mut dancer_data]);
         }
 
         assert_eq!(dancer_data.points, 139);
@@ -163,7 +167,7 @@ mod tests {
         let mut dancer_data = ReindeerData::new(dancer_reindeer());
 
         for _ in 0..1000 {
-            tick_reindeers(&mut comet_data, &mut dancer_data);
+            tick_reindeers(&mut vec![&mut comet_data, &mut dancer_data]);
         }
 
         assert_eq!(dancer_data.points, 689);
