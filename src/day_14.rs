@@ -11,12 +11,15 @@ pub fn part_2() -> u32 {
     let mut comet_data = ReindeerData::new(comet_reindeer());
     let mut dancer_data = ReindeerData::new(dancer_reindeer());
 
+    let mut reindeers = vec![comet_data, dancer_data];
+
     for _ in 0..2503 {
-        tick_reindeers(&mut vec![&mut comet_data, &mut dancer_data]);
+        reindeers = tick_reindeers(reindeers);
     }
 
-    vec![comet_data.points, dancer_data.points]
+    reindeers
         .iter()
+        .map(|reindeer_data| reindeer_data.points)
         .max()
         .unwrap()
         .clone()
@@ -108,8 +111,8 @@ fn distance(reindeer: &Reindeer, time: u32) -> u32 {
     cicles * km_per_cicle + distance(reindeer, time - cicles * full_cicle)
 }
 
-fn tick_reindeers(reindeers: &mut Vec<&mut ReindeerData>) {
-    for reindeer_data in reindeers.iter_mut() {
+fn tick_reindeers(mut reindeers: Vec<ReindeerData>) -> Vec<ReindeerData> {
+    for reindeer_data in &mut reindeers {
         reindeer_data.tick();
     }
 
@@ -119,11 +122,13 @@ fn tick_reindeers(reindeers: &mut Vec<&mut ReindeerData>) {
         .max()
         .unwrap();
 
-    for reindeer_data in reindeers {
+    for reindeer_data in &mut reindeers {
         if reindeer_data.distance == max_distance {
             reindeer_data.points += 1;
         }
     }
+
+    reindeers
 }
 
 #[cfg(test)]
@@ -153,12 +158,14 @@ mod tests {
         let mut comet_data = ReindeerData::new(comet_reindeer());
         let mut dancer_data = ReindeerData::new(dancer_reindeer());
 
+        let mut reindeers = vec![comet_data, dancer_data];
+
         for _ in 0..140 {
-            tick_reindeers(&mut vec![&mut comet_data, &mut dancer_data]);
+            reindeers = tick_reindeers(reindeers);
         }
 
-        assert_eq!(dancer_data.points, 139);
-        assert_eq!(comet_data.points, 1);
+        assert_eq!(reindeers.get(0).unwrap().points, 1);
+        assert_eq!(reindeers.get(1).unwrap().points, 139);
     }
 
     #[test]
@@ -166,11 +173,13 @@ mod tests {
         let mut comet_data = ReindeerData::new(comet_reindeer());
         let mut dancer_data = ReindeerData::new(dancer_reindeer());
 
+        let mut reindeers = vec![comet_data, dancer_data];
+
         for _ in 0..1000 {
-            tick_reindeers(&mut vec![&mut comet_data, &mut dancer_data]);
+            reindeers = tick_reindeers(reindeers);
         }
 
-        assert_eq!(dancer_data.points, 689);
-        assert_eq!(comet_data.points, 312);
+        assert_eq!(reindeers.get(0).unwrap().points, 312);
+        assert_eq!(reindeers.get(1).unwrap().points, 689);
     }
 }
