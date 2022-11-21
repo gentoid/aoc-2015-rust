@@ -1,25 +1,17 @@
+use itertools::Itertools;
 use regex::Regex;
 
 use crate::read_input::read_lines;
 
 pub fn part_1() -> u32 {
-    let the_winner = find_the_winner(
-        vec![
-            ReindeerData::new(comet_reindeer()),
-            ReindeerData::new(dancer_reindeer()),
-        ],
-        WinBy::Distance,
-    );
+    let reindeers = vec![comet_reindeer(), dancer_reindeer()];
+    let the_winner = find_the_winner(reindeers, WinBy::Distance);
 
     the_winner.distance
 }
 
 pub fn part_2() -> u32 {
-    let reindeers = read_lines(14)
-        .iter()
-        .map(|line| ReindeerData::new(parse_line(line)))
-        .collect::<Vec<_>>();
-
+    let reindeers = read_lines(14).iter().map(parse_line).collect_vec();
     let the_winner = find_the_winner(reindeers, WinBy::Points);
 
     the_winner.points
@@ -30,7 +22,12 @@ enum WinBy {
     Points,
 }
 
-fn find_the_winner(mut reindeers: Vec<ReindeerData>, win_by: WinBy) -> ReindeerData {
+fn find_the_winner(reindeers: Vec<Reindeer>, win_by: WinBy) -> ReindeerData {
+    let mut reindeers = reindeers
+        .into_iter()
+        .map(ReindeerData::new)
+        .collect::<Vec<_>>();
+
     for _ in 0..2503 {
         reindeers = tick_reindeers(reindeers);
     }
@@ -56,7 +53,7 @@ fn find_the_winner(mut reindeers: Vec<ReindeerData>, win_by: WinBy) -> ReindeerD
     output
 }
 
-fn parse_line(line: &str) -> Reindeer {
+fn parse_line(line: &String) -> Reindeer {
     let temlate = Regex::new(
         r"(\w+) can fly (\d+) km/s for (\d+) seconds, but then must rest for (\d+) seconds.",
     )
