@@ -1,6 +1,6 @@
 use regex::Regex;
 
-#[derive(Default)]
+#[derive(Clone, Debug, Default)]
 struct Ingredient {
     // name: String,
     capacity: i32,
@@ -10,6 +10,7 @@ struct Ingredient {
     calories: i32,
 }
 
+#[derive(Clone, Debug)]
 struct Teaspoon {
     quantity: u32,
     ingredient: Ingredient,
@@ -55,6 +56,36 @@ fn calculate_score(teaspoons: &Vec<Teaspoon>) -> u32 {
     output as u32
 }
 
+fn combinations(quantity_left: u32, ingredients: &[Ingredient]) -> Vec<Vec<Teaspoon>> {
+    match ingredients {
+        [] => vec![],
+        [head] => vec![vec![Teaspoon {
+            quantity: quantity_left,
+            ingredient: (*head).clone(),
+        }]],
+        [head, tail @ ..] => {
+            let mut output = vec![];
+
+            for quantity in 0..=quantity_left {
+                let teaspoon= Teaspoon {
+                    quantity,
+                    ingredient: (*head).clone(),
+                };
+
+                for inner in combinations(quantity_left - quantity, tail) {
+                    let mut tmp = vec![teaspoon.clone()];
+                    tmp.extend(inner);
+                    output.push(tmp);
+                }
+        
+            }
+
+            output
+        }
+    }
+
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -78,7 +109,7 @@ mod tests {
     };
 
     #[test]
-    fn example_1() {
+    fn calculates_score() {
         assert_eq!(
             calculate_score(&vec![
                 Teaspoon {
@@ -92,5 +123,16 @@ mod tests {
             ]),
             62842880
         );
+    }
+
+    #[test]
+    fn finds_all_combinations() {
+        let ingredients = vec![EXAMPLE_BUTTERSOTCH, EXAMPLE_BUTTERSOTCH, EXAMPLE_CINNAMON];
+
+        assert_eq!(combinations(1, &ingredients).len(), 3);
+        assert_eq!(combinations(2, &ingredients).len(), 6);
+        assert_eq!(combinations(3, &ingredients).len(), 10);
+        assert_eq!(combinations(4, &ingredients).len(), 15);
+        assert_eq!(combinations(5, &ingredients).len(), 21);
     }
 }
