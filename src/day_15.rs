@@ -13,6 +13,17 @@ pub fn part_1() -> u32 {
         .unwrap()
 }
 
+pub fn part_2() -> u32 {
+    let ingredients = read_lines(15).iter().map(parse_line).collect_vec();
+
+    combinations(100, &ingredients)
+        .iter()
+        .filter(|teaspoons| calculate_calories(teaspoons) == 500)
+        .map(calculate_score)
+        .max()
+        .unwrap()
+}
+
 #[derive(Clone, Debug, Default)]
 struct Ingredient {
     // name: String,
@@ -20,7 +31,7 @@ struct Ingredient {
     durability: i32,
     flavor: i32,
     texture: i32,
-    calories: i32,
+    calories: u32,
 }
 
 #[derive(Clone, Debug)]
@@ -31,7 +42,7 @@ struct Teaspoon {
 
 fn parse_line(line: &String) -> Ingredient {
     let temlate = Regex::new(
-        r"(\w+): capacity (-?\d+), durability (-?\d+), flavor (-?\d+), texture (-?\d+), calories (-?\d+)",
+        r"(\w+): capacity (-?\d+), durability (-?\d+), flavor (-?\d+), texture (-?\d+), calories (\d+)",
     )
     .unwrap();
     let captures = temlate.captures(line).unwrap();
@@ -42,7 +53,7 @@ fn parse_line(line: &String) -> Ingredient {
         durability: captures[3].parse::<i32>().unwrap(),
         flavor: captures[4].parse::<i32>().unwrap(),
         texture: captures[5].parse::<i32>().unwrap(),
-        calories: captures[6].parse::<i32>().unwrap(),
+        calories: captures[6].parse::<u32>().unwrap(),
     }
 }
 
@@ -67,6 +78,16 @@ fn calculate_score(teaspoons: &Vec<Teaspoon>) -> u32 {
     assert!(output >= 0);
 
     output as u32
+}
+
+fn calculate_calories(teaspoons: &Vec<Teaspoon>) -> u32 {
+    let mut calories = 0;
+
+    for teaspoon in teaspoons {
+        calories += teaspoon.quantity * teaspoon.ingredient.calories;
+    }
+
+    calories
 }
 
 fn combinations(quantity_left: u32, ingredients: &[Ingredient]) -> Vec<Vec<Teaspoon>> {
