@@ -1,4 +1,17 @@
+use itertools::Itertools;
 use regex::Regex;
+
+use crate::read_input::read_lines;
+
+pub fn part_1() -> u32 {
+    let ingredients = read_lines(15).iter().map(parse_line).collect_vec();
+
+    combinations(100, &ingredients)
+        .iter()
+        .map(calculate_score)
+        .max()
+        .unwrap()
+}
 
 #[derive(Clone, Debug, Default)]
 struct Ingredient {
@@ -16,9 +29,9 @@ struct Teaspoon {
     ingredient: Ingredient,
 }
 
-fn parse_line(line: &str) -> Ingredient {
+fn parse_line(line: &String) -> Ingredient {
     let temlate = Regex::new(
-        r"(\w+): capacity (-?\d+) durability (-?\d+), flavor (-?\d+), texture (-?\d+), calories (-?\d+)",
+        r"(\w+): capacity (-?\d+), durability (-?\d+), flavor (-?\d+), texture (-?\d+), calories (-?\d+)",
     )
     .unwrap();
     let captures = temlate.captures(line).unwrap();
@@ -67,7 +80,7 @@ fn combinations(quantity_left: u32, ingredients: &[Ingredient]) -> Vec<Vec<Teasp
             let mut output = vec![];
 
             for quantity in 0..=quantity_left {
-                let teaspoon= Teaspoon {
+                let teaspoon = Teaspoon {
                     quantity,
                     ingredient: (*head).clone(),
                 };
@@ -77,13 +90,11 @@ fn combinations(quantity_left: u32, ingredients: &[Ingredient]) -> Vec<Vec<Teasp
                     tmp.extend(inner);
                     output.push(tmp);
                 }
-        
             }
 
             output
         }
     }
-
 }
 
 #[cfg(test)]
@@ -134,5 +145,17 @@ mod tests {
         assert_eq!(combinations(3, &ingredients).len(), 10);
         assert_eq!(combinations(4, &ingredients).len(), 15);
         assert_eq!(combinations(5, &ingredients).len(), 21);
+    }
+
+    #[test]
+    fn finds_max_score() {
+        let ingredients = vec![EXAMPLE_BUTTERSOTCH, EXAMPLE_CINNAMON];
+        let max_score = combinations(100, &ingredients)
+            .iter()
+            .map(calculate_score)
+            .max()
+            .unwrap();
+
+        assert_eq!(max_score, 62842880);
     }
 }
