@@ -6,11 +6,10 @@ use regex::Regex;
 use crate::read_input::read_lines;
 
 pub fn part_1() -> u32 {
-    let all_aunts = read_lines(16).iter().map(parse_line).collect_vec();
     let known_aunt_sue = mfcsam_output();
 
-    for aunt in all_aunts {
-        if known_aunt_sue.is_this(&aunt) {
+    for aunt in all_aunts() {
+        if known_aunt_sue.is_this_1(&aunt) {
             return aunt.number;
         }
     }
@@ -18,17 +17,32 @@ pub fn part_1() -> u32 {
     unreachable!("No aunt found!");
 }
 
-#[derive(Default)]
+fn all_aunts() -> Vec<Aunt> {
+    read_lines(16).iter().map(parse_line).collect_vec()
+}
+
 struct Aunt {
     number: u32,
     properties: HashMap<String, u32>,
 }
 
-impl Aunt {
-    fn is_this(&self, other: &Self) -> bool {
-        for (property, value) in other.properties.iter() {
-            if self.properties.get(property.as_str()) != Some(&value) {
-                return false
+enum PropertyType {
+    GreaterThan,
+    FewerThan,
+    Exactly,
+}
+
+struct KnownAunt {
+    properties: HashMap<String, (u32, PropertyType)>,
+}
+
+impl KnownAunt {
+    fn is_this_1(&self, aunt: &Aunt) -> bool {
+        for (property, value) in aunt.properties.iter() {
+            if let Some((self_value, _)) = self.properties.get(property.as_str()) {
+                if self_value != value {
+                    return false;
+                }
             }
         }
 
@@ -36,22 +50,21 @@ impl Aunt {
     }
 }
 
-fn mfcsam_output() -> Aunt {
+fn mfcsam_output() -> KnownAunt {
+    use PropertyType::*;
+
     let mut properties = HashMap::new();
-    properties.insert("children".to_owned(), 3);
-    properties.insert("cats".to_owned(), 7);
-    properties.insert("samoyeds".to_owned(), 2);
-    properties.insert("pomeranians".to_owned(), 3);
-    properties.insert("akitas".to_owned(), 0);
-    properties.insert("vizslas".to_owned(), 0);
-    properties.insert("goldfish".to_owned(), 5);
-    properties.insert("trees".to_owned(), 3);
-    properties.insert("cars".to_owned(), 2);
-    properties.insert("perfumes".to_owned(), 1);
-    Aunt {
-        number: 0,
-        properties,
-    }
+    properties.insert("children".to_owned(), (3, Exactly));
+    properties.insert("cats".to_owned(), (7, GreaterThan));
+    properties.insert("samoyeds".to_owned(), (2, Exactly));
+    properties.insert("pomeranians".to_owned(), (3, FewerThan));
+    properties.insert("akitas".to_owned(), (0, Exactly));
+    properties.insert("vizslas".to_owned(), (0, Exactly));
+    properties.insert("goldfish".to_owned(), (5, FewerThan));
+    properties.insert("trees".to_owned(), (3, GreaterThan));
+    properties.insert("cars".to_owned(), (2, Exactly));
+    properties.insert("perfumes".to_owned(), (1, Exactly));
+    KnownAunt { properties }
 }
 
 fn parse_line(line: &String) -> Aunt {
