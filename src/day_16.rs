@@ -17,6 +17,18 @@ pub fn part_1() -> u32 {
     unreachable!("No aunt found!");
 }
 
+pub fn part_2() -> u32 {
+    let known_aunt_sue = mfcsam_output();
+
+    for aunt in all_aunts() {
+        if known_aunt_sue.is_this_2(&aunt) {
+            return aunt.number;
+        }
+    }
+
+    unreachable!("No aunt found!");
+}
+
 fn all_aunts() -> Vec<Aunt> {
     read_lines(16).iter().map(parse_line).collect_vec()
 }
@@ -41,6 +53,26 @@ impl KnownAunt {
         for (property, value) in aunt.properties.iter() {
             if let Some((self_value, _)) = self.properties.get(property.as_str()) {
                 if self_value != value {
+                    return false;
+                }
+            }
+        }
+
+        true
+    }
+
+    fn is_this_2(&self, aunt: &Aunt) -> bool {
+        use PropertyType::*;
+
+        for (property, value) in aunt.properties.iter() {
+            if let Some((self_value, property_type)) = self.properties.get(property.as_str()) {
+                let met_condition = match property_type {
+                    Exactly => self_value == value,
+                    GreaterThan => value > self_value,
+                    FewerThan => value < self_value,
+                };
+
+                if !met_condition {
                     return false;
                 }
             }
