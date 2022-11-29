@@ -1,26 +1,24 @@
-use rayon::prelude::*;
-
 use crate::read_input::read_lines;
 
 pub fn part_1() -> usize {
     calculate(false)
 }
 
-pub fn part_2() ->usize {
+pub fn part_2() -> usize {
     calculate(true)
 }
 
 fn calculate(corners_are_on: bool) -> usize {
-    let mut matrix: Matrix = read_lines(18).par_iter().map(parse_line).collect();
+    let mut matrix: Matrix = read_lines(18).iter().map(parse_line).collect();
 
     for _ in 0..100 {
         matrix = tick(&matrix, corners_are_on);
     }
 
     matrix
-        .par_iter()
+        .iter()
         .map(|line| {
-            line.par_iter()
+            line.iter()
                 .filter(|value| **value)
                 .collect::<Vec<_>>()
                 .len()
@@ -33,18 +31,17 @@ type Matrix = Vec<Vec<bool>>;
 fn parse_line(line: &String) -> Vec<bool> {
     assert_eq!(line.len(), 100);
 
-    line.par_chars().map(|char| char == '#').collect()
+    line.chars().map(|char| char == '#').collect()
 }
 
 fn tick(matrix: &Matrix, corners_are_on: bool) -> Matrix {
     let offsets: [i32; 3] = [-1, 0, 1];
-    let matrix_zero_based_length: usize = 99;
 
     matrix
-        .par_iter()
+        .iter()
         .enumerate()
         .map(|(x, line)| {
-            line.par_iter()
+            line.iter()
                 .enumerate()
                 .map(|(y, value)| {
                     if corners_are_on {
@@ -54,10 +51,10 @@ fn tick(matrix: &Matrix, corners_are_on: bool) -> Matrix {
                         };
                     }
                     let neighbours: u32 = offsets
-                        .par_iter()
+                        .iter()
                         .map(|x_offset| {
                             offsets
-                                .par_iter()
+                                .iter()
                                 .map(|y_offset| {
                                     if *x_offset == 0 && *y_offset == 0 {
                                         return 0;
