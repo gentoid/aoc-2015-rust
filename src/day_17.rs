@@ -3,12 +3,28 @@ use itertools::Itertools;
 use crate::read_input::read_lines;
 
 pub fn part_1() -> usize {
-    let containers = read_lines(17)
+    combinations(150, &containers()).len()
+}
+
+pub fn part_2() -> usize {
+    let lengths = combinations(150, &containers())
+        .into_iter()
+        .map(|combination| combination.len())
+        .collect_vec();
+    let min_length = lengths.iter().min().unwrap();
+
+    lengths
+        .iter()
+        .filter(|length| *length == min_length)
+        .collect_vec()
+        .len()
+}
+
+fn containers() -> Vec<u32> {
+    read_lines(17)
         .iter()
         .map(|line| line.parse::<u32>().unwrap())
-        .collect_vec();
-
-    combinations(150, &containers).len()
+        .collect_vec()
 }
 
 fn combinations(liters: u32, containers: &[u32]) -> Vec<Vec<u32>> {
