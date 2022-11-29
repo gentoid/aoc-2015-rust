@@ -32,13 +32,13 @@ fn tick(matrix: &Matrix) -> Matrix {
                                         return 0;
                                     }
 
+                                    if (y as i32 + y_offset) < 0 {
+                                        return 0;
+                                    }
+
                                     match matrix.get((x as i32 + x_offset) as usize) {
                                         None => 0,
                                         Some(offset_line) => {
-                                            if (y as i32 + y_offset) < 0 {
-                                                return 0;
-                                            }
-
                                             match offset_line.get((y as i32 + y_offset) as usize) {
                                                 None => 0,
                                                 Some(offset_value) => {
