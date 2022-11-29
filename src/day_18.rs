@@ -1,5 +1,25 @@
 use rayon::prelude::*;
 
+use crate::read_input::read_lines;
+
+pub fn part_1() -> usize {
+    let mut matrix: Matrix = read_lines(18).par_iter().map(parse_line).collect();
+
+    for _ in 0..100 {
+        matrix = tick(&matrix);
+    }
+
+    matrix
+        .par_iter()
+        .map(|line| {
+            line.par_iter()
+                .filter(|value| **value)
+                .collect::<Vec<_>>()
+                .len()
+        })
+        .sum()
+}
+
 type Matrix = Vec<Vec<bool>>;
 
 fn parse_line(line: &String) -> Vec<bool> {
